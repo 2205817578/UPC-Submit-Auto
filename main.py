@@ -88,4 +88,3 @@ try:
 except smtplib.SMTPException:
     print("Error: 无法发送邮件")
 print(saveJson['m'])
-print(saveJson['m'])
