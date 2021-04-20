@@ -6,7 +6,7 @@ name: Daily Submit
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
    schedule:
-    - cron: '0 21,22 * * *'
+    - cron: '0 2 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -33,6 +33,9 @@ jobs:
       env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }} 
+          SJNUSERNAME: ${{ secrets.SJNUSERNAME }}
+          SJNPASSWORD: ${{ secrets.SJNPASSWORD }}
       run: |
         python main.py
+        python sjn.py
         # 执行代码
