@@ -64,6 +64,63 @@ saveResponse = conn.post(
 
 saveJson = json.loads(saveResponse.text)
 
+sjnsignIn = {'username': os.environ["SJNUSERNAME"], #学号
+          'password': os.environ["SJNPASSWORD"]} #登陆密码
+
+sjnheaders = {
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Mobile Safari/537.36',
+}
+
+sjnconn = requests.Session()
+sjnsignInResponse= sjnconn.post(
+    url="https://app.upc.edu.cn/uc/wap/login/check",
+    headers=sjnheaders,
+    data= sjnsignIn,
+    timeout=10
+)
+
+sjnhistoryResponse = sjnconn.get(
+    url="https://app.upc.edu.cn/ncov/wap/default/index?from=history",
+    headers=sjnheaders,
+    data={'from': 'history'},
+    timeout=10
+)
+sjnhistoryResponse.encoding = "UTF-8"
+
+sjnhtml = lxml.html.fromstring(sjnhistoryResponse.text)
+sjnJS = sjnhtml.xpath('/html/body/script[@type="text/javascript"]')
+sjnJStr = sjnJS[0].text
+sjndefault = re.search('var def = {.*};',sjnJStr).group()
+sjnoldInfo = re.search('oldInfo: {.*},',sjnJStr).group()
+
+sjnfirstParam = re.search('sfzgsxsx: .,',sjnJStr).group()
+sjnfirstParam = '"' + sjnfirstParam.replace(':','":')
+sjnsecondParam = re.search('sfzhbsxsx: .,',sjnJStr).group()
+sjnsecondParam = '"' +  sjnsecondParam.replace(':','":')
+sjnlastParam = re.search('szgjcs: \'(.*)\'',sjnJStr).group()
+sjnlastParam = sjnlastParam.replace('szgjcs: \'','').rstrip('\'')
+
+sjnnewInfo = sjnoldInfo
+sjnnewInfo = sjnnewInfo.replace('oldInfo: {','{' + sjnfirstParam + sjnsecondParam).rstrip(',')
+
+sjndefaultStrip = sjndefault.replace('var def = ','').rstrip(';')
+sjndefdic = json.loads(sjndefaultStrip)
+
+sjndic = json.loads(sjnnewInfo)
+sjndic['ismoved'] = '0'
+for j in ["date","created","id","gwszdd","sfyqjzgc","jrsfqzys","jrsfqzfy"]:
+    sjndic[j] = sjndefdic[j]
+sjndic['szgjcs'] = sjnlastParam
+
+sjnsaveResponse = sjnconn.post(
+    url="https://app.upc.edu.cn/ncov/wap/default/save",
+    headers=sjnheaders,
+    data = sjndic,
+    timeout=10
+)
+
+sjnsaveJson = json.loads(sjnsaveResponse.text)
+
 # 第三方 SMTP 服务
 mail_host = "smtp.qq.com"  # 设置服务器
 mail_user = "2819237058@qq.com"  # 用户名
@@ -79,11 +136,21 @@ message['To'] = Header("测试", 'utf-8')
 subject = '疫情防控通'
 message['Subject'] = Header(subject, 'utf-8')
 
+sjnreceivers = ['2213766328@qq.com']  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
+
+sjnmessage = MIMEText(sjnsaveJson['m'], 'plain', 'utf-8')
+sjnmessage['From'] = Header("sjn疫情防控通填报通知", 'utf-8')
+sjnmessage['To'] = Header("测试", 'utf-8')
+
+subject = 'sjn疫情防控通'
+sjnmessage['Subject'] = Header(subject, 'utf-8')
+
 try:
     smtpObj = smtplib.SMTP()
     smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
     smtpObj.login(mail_user, mail_pass)
     smtpObj.sendmail(sender, receivers, message.as_string())
+    smtpObj.sendmail(sender, sjnreceivers, sjnmessage.as_string())
     print("邮件发送成功")
 except smtplib.SMTPException:
     print("Error: 无法发送邮件")
