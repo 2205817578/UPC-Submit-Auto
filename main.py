@@ -151,7 +151,8 @@ try:
     smtpObj.login(mail_user, mail_pass)
     smtpObj.sendmail(sender, receivers, message.as_string())
     smtpObj.sendmail(sender, sjnreceivers, sjnmessage.as_string())
-    print("邮件发送成功")
+    print("lyx&sjn邮件发送成功")
 except smtplib.SMTPException:
-    print("Error: 无法发送邮件")
+    print("Error: lyx&sjn无法发送邮件")
 print(saveJson['m'])
+print(sjnsaveJson['m'])
