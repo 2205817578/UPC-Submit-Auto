@@ -6,7 +6,11 @@ import re
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
+import time
+import random
 
+z = random.randrange(120, 900);
+time.sleep(z);
 signIn = {'username': os.environ["USERNAME"], #学号
           'password': os.environ["PASSWORD"]} #登陆密码
 
