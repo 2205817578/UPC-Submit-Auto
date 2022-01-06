@@ -140,7 +140,7 @@ message['To'] = Header("测试", 'utf-8')
 subject = '疫情防控通'
 message['Subject'] = Header(subject, 'utf-8')
 
-sjnreceivers = ['2213766328@qq.co']  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
+sjnreceivers = ['2213766328@qq.com']  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
 
 sjnmessage = MIMEText(sjnsaveJson['m'], 'plain', 'utf-8')
 sjnmessage['From'] = Header("sjn疫情防控通填报通知", 'utf-8')
