@@ -131,7 +131,7 @@ mail_user = "2819237058@qq.com"  # 用户名
 mail_pass = "lyimhkqaudcudfbd"  # 口令
 
 sender = '2819237058@qq.com'
-receivers = ['2205817578@qq.com']  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
+receivers = ['220581757@qq.com']  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
 
 message = MIMEText(saveJson['m'], 'plain', 'utf-8')
 message['From'] = Header("疫情防控通填报通知", 'utf-8')
