@@ -36,6 +36,6 @@ jobs:
           SJNUSERNAME: ${{ secrets.SJNUSERNAME }}
           SJNPASSWORD: ${{ secrets.SJNPASSWORD }}
       run: |
-        python main.py  
-        python sjn.py
+        # python main.py  
+        # python sjn.py
         # 执行代码
